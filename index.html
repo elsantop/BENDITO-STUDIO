@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BENDITO STUDIO</title>
+  <meta name="theme-color" content="#0b0b0c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="STUDIO">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <img src="icon.svg" alt="" width="30" height="30">
+      <h1>BENDITO STUDIO</h1>
+    </div>
+    <p class="date" id="date"></p>
+    <nav class="days" id="days" aria-label="Wochentag"></nav>
+  </header>
+
+  <main id="app"></main>
+
+  <nav class="tabs" aria-label="Bereich">
+    <button data-action="tab" data-tab="week" id="tab-week"><svg class="tico" viewBox="0 0 28 28" aria-hidden="true"><path d="M5 7h18v16H5zM5 12h18M10 4v5M18 4v5M9 17l2.5 2.5L16 15"/></svg><span>Woche</span></button>
+    <button data-action="tab" data-tab="shoot" id="tab-shoot"><svg class="tico" viewBox="0 0 28 28" aria-hidden="true"><path d="M9 3h10a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM12 6h4M12 14l5 3-5 3z"/></svg><span>Drehplan</span></button>
+    <button data-action="tab" data-tab="captions" id="tab-captions"><svg class="tico" viewBox="0 0 28 28" aria-hidden="true"><path d="M5 6h18v12H11l-5 4v-4H5zM9 10h10M9 14h6"/></svg><span>Captions</span></button>
+    <button data-action="tab" data-tab="ideas" id="tab-ideas"><svg class="tico" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3a7 7 0 0 0-4 12.7V19h8v-3.3A7 7 0 0 0 14 3zM11 23h6"/></svg><span>Ideen</span></button>
+  </nav>
+
+  <script src="data.js"></script>
+  <script src="three.min.js"></script>
+  <script src="figure3d.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
