@@ -147,32 +147,35 @@ function phone(def, ost, label) {
 function clipCard(c) {
   const s = c.side, on = isOn(c.id);
   const dist = String(s.dist).replace('.', ',');
-  return `<section class="card${on ? ' complete' : ''}" id="${esc(c.id)}">
-    <div class="clip-h"><span class="num">${c.n}</span><div class="grow"><p class="ctime">${esc(c.t)} · Setup ${esc(c.setup)}</p><h3 class="cline">${esc(c.ost.join(' ').toLowerCase().replace(/^./, (m) => m.toUpperCase()))}</h3></div></div>
+  const lens = String(s.lens).replace('×', '').replace('x', '');
+  const rig = [[s.h, 'cm', 'Höhe'], [s.tilt, '°', 'Winkel'], [dist, 'm', 'Abstand'], [lens, '×', 'Linse']];
+  return `<section class="card clip${on ? ' complete' : ''}" id="${esc(c.id)}">
+    <header class="clip-h"><span class="num">${c.n}</span><div class="grow"><p class="ctime">${esc(c.t)} · Setup ${esc(c.setup)}</p><h3 class="cline">${esc(c.ost.join(' ').toLowerCase().replace(/^./, (m) => m.toUpperCase()))}</h3></div></header>
     <div class="shots${c.end ? '' : ' one'}">${phone(c.scene, c.ost, 'Handybild')}${c.end ? phone(c.end, [], c.endLabel || 'Ende') : ''}</div>
-    <div class="views"><figure><div class="sv"><img data-side='${esc(JSON.stringify(s))}' alt="Seitenansicht"><svg viewBox="0 0 800 460"></svg></div><figcaption>Seite: Höhe, Winkel, Abstand</figcaption></figure>
+    <div class="rig" role="list" aria-label="Handy-Einstellung">${rig.map(([v, u, l]) => `<div role="listitem"><b>${esc(v)}<small>${u}</small></b><span>${l}</span></div>`).join('')}</div>
+    <div class="views"><figure><div class="sv"><img data-side='${esc(JSON.stringify(s))}' alt="Seitenansicht"><svg viewBox="0 0 800 460"></svg></div><figcaption>Von der Seite</figcaption></figure>
       <figure>${topView(c.top)}<figcaption>Von oben</figcaption></figure></div>
-    <dl class="steps"><div><dt>Handy</dt><dd><b class="spec">${s.h} cm · ${s.tilt}° · ${dist} m · ${esc(s.lens)}</b>${esc(c.handy)}</dd></div><div><dt>Du</dt><dd>${esc(c.du)}</dd></div><div><dt>Takes</dt><dd>${esc(c.takes)}</dd></div></dl>
-    <p class="planb"><b>Plan B</b>${esc(c.b)}</p>
+    <dl class="steps"><div><dt>Handy</dt><dd>${esc(c.handy)}</dd></div><div><dt>Du</dt><dd>${esc(c.du)}</dd></div><div><dt>Takes</dt><dd>${esc(c.takes)}</dd></div></dl>
+    <p class="planb"><b>Falls es nicht geht</b>${esc(c.b)}</p>
     <div class="shot-done">${taskRow({ id: c.id, t: on ? 'Gedreht' : 'Als gedreht abhaken' })}</div></section>`;
 }
 
 // Draufsicht (400 × 230)
 function topView(t = {}) {
-  let o = '<rect width="400" height="230" rx="6" fill="var(--plan)"/>';
-  if (t.mirror) o += '<rect x="16" y="10" width="368" height="5" fill="var(--mirror)"/><text x="200" y="30" class="tl" text-anchor="middle">Spiegel: nicht ins Bild</text>';
+  let o = '<defs><pattern id="tile" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="rgba(229,228,226,.045)"/></pattern><radialGradient id="camg" cx="0" cy="0" r="1"><stop offset="0" stop-color="#8fb8d8" stop-opacity=".32"/><stop offset="1" stop-color="#8fb8d8" stop-opacity="0"/></radialGradient></defs><rect width="400" height="230" fill="var(--plan)"/><rect width="400" height="230" fill="url(#tile)"/>';
+  if (t.mirror) o += '<rect x="16" y="10" width="368" height="3" rx="1.5" fill="var(--mirror)"/><text x="200" y="30" class="tl" text-anchor="middle">Spiegel: nicht ins Bild</text>';
   if (t.building) o += '<rect x="16" y="14" width="368" height="50" fill="#15181e" stroke="var(--line)"/><rect x="40" y="58" width="54" height="8" fill="var(--lampC)"/><text x="67" y="44" class="tl" text-anchor="middle">Tür</text>';
   (t.items || []).forEach((it) => {
-    if (it.t === 'bench') { const w = it.w || 110; o += `<rect x="${it.x}" y="${it.y}" width="${w}" height="28" rx="6" fill="var(--pad)"/><text x="${it.x + w / 2}" y="${it.ly ?? it.y + 48}" class="tl" text-anchor="middle">${esc(it.label || 'Bank')}</text>`; }
+    if (it.t === 'bench') { const w = it.w || 110; o += `<rect x="${it.x}" y="${it.y}" width="${w}" height="28" rx="6" fill="var(--pad)" stroke="rgba(229,228,226,.12)"/><text x="${it.x + w / 2}" y="${it.ly ?? it.y + 48}" class="tl" text-anchor="middle">${esc(it.label || 'Bank')}</text>`; }
     if (it.t === 'barbell') o += `<rect x="${it.x - 4}" y="${it.y - 52}" width="8" height="104" fill="var(--steelD)"/><rect x="${it.x - 12}" y="${it.y - 58}" width="24" height="12" rx="3" fill="var(--steelD)"/><rect x="${it.x - 12}" y="${it.y + 46}" width="24" height="12" rx="3" fill="var(--steelD)"/><text x="${it.x}" y="${it.y - 68}" class="tl" text-anchor="middle">Langhantel</text>`;
   });
   if (t.cam) {
     const [x, y, ang, spread = 30, ln = 150] = t.cam, r = (a) => (a * Math.PI) / 180;
     const p = `M${x} ${y} L${(x + ln * Math.cos(r(ang - spread))).toFixed(0)} ${(y + ln * Math.sin(r(ang - spread))).toFixed(0)} L${(x + ln * Math.cos(r(ang + spread))).toFixed(0)} ${(y + ln * Math.sin(r(ang + spread))).toFixed(0)}Z`;
-    o += `<path d="${p}" fill="var(--cam)" opacity=".13"/><path d="${p}" fill="none" stroke="var(--cam)" stroke-dasharray="3 4"/><rect x="${x - 6}" y="${y - 10}" width="12" height="20" rx="3" fill="var(--cam)" transform="rotate(${ang + 90} ${x} ${y})"/>`;
+    o += `<path d="${p}" fill="var(--cam)" fill-opacity=".1"/><path d="${p}" fill="none" stroke="var(--cam)" stroke-opacity=".55" stroke-width="1"/><g transform="rotate(${ang + 90} ${x} ${y})"><rect x="${x - 7}" y="${y - 11}" width="14" height="22" rx="3.5" fill="#0f1114" stroke="var(--cam)" stroke-width="1.5"/><circle cx="${x}" cy="${y - 6}" r="1.8" fill="var(--cam)"/></g>`;
   }
-  if (t.walk) o += `<path d="${t.walk}" stroke="var(--path)" stroke-width="2.5" stroke-dasharray="7 6" fill="none" class="walk"/>`;
-  if (t.fig) { const [x, y, a = 0] = t.fig; o += `<g transform="translate(${x} ${y}) rotate(${a})"><ellipse rx="16" ry="9" fill="var(--path)"/><circle cx="2" r="7.5" fill="var(--surface)" stroke="var(--path)" stroke-width="2"/></g>`; }
+  if (t.walk) o += `<path d="${t.walk}" stroke="var(--gold)" stroke-opacity=".75" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round" fill="none" class="walk"/>`;
+  if (t.fig) { const [x, y, a = 0] = t.fig; o += `<g transform="translate(${x} ${y}) rotate(${a})"><ellipse rx="17" ry="9.5" fill="var(--gold)" fill-opacity=".9"/><circle cx="2" r="7" fill="#e9e9ec"/><path d="M12 0l9 0" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/></g>`; }
   (t.text || []).forEach(([x, y, s, cls]) => { o += `<text x="${x}" y="${y}" class="tl ${cls || ''}">${esc(s)}</text>`; });
   return `<svg viewBox="0 0 400 230" class="plan" role="img" aria-label="Draufsicht">${o}</svg>`;
 }
@@ -217,10 +220,9 @@ function sideShot(s) {
 function sideLabels(s) {
   const g = sideGeom(s), X = (x) => ((x - g.left) / g.span) * 800, Y = (y) => ((g.top - y) / (g.top - g.bottom)) * 460;
   const h = s.h / 100, px = X(0), py = Y(h), gy = Y(0), fx = X(s.dist), a = (s.tilt * Math.PI) / 180;
-  let o = `<line x1="${px}" y1="${gy}" x2="${px}" y2="${py + 14}" stroke="#ffd79a" stroke-dasharray="3 4" stroke-width="2"/><text x="${px - 14}" y="${(gy + py) / 2 + 8}" text-anchor="end" class="lab warm">${s.h} cm</text>`;
-  if (s.tilt) { const r = 70; o += `<line x1="${px}" y1="${py}" x2="${px + r + 30}" y2="${py}" stroke="#9a9890" stroke-dasharray="2 4"/><path d="M${px + r} ${py} A${r} ${r} 0 0 0 ${px + r * Math.cos(a)} ${py - r * Math.sin(a)}" fill="none" stroke="#ffd79a" stroke-width="2.5"/><text x="${px + r + 12}" y="${py - r * Math.sin(a / 2) + 4}" class="lab warm">${s.tilt}°</text>`; }
+  let o = `<line x1="${px}" y1="${gy}" x2="${px}" y2="${py + 14}" stroke="#d4b483" stroke-dasharray="3 4" stroke-width="2"/><text x="${px - 14}" y="${(gy + py) / 2 + 8}" text-anchor="end" class="lab warm">${s.h} cm</text>`;
+  if (s.tilt) { const r = 70; o += `<line x1="${px}" y1="${py}" x2="${px + r + 30}" y2="${py}" stroke="#9a9890" stroke-dasharray="2 4"/><path d="M${px + r} ${py} A${r} ${r} 0 0 0 ${px + r * Math.cos(a)} ${py - r * Math.sin(a)}" fill="none" stroke="#d4b483" stroke-width="2.5"/><text x="${px + r + 12}" y="${py - r * Math.sin(a / 2) + 4}" class="lab warm">${s.tilt}°</text>`; }
   o += `<line x1="${px}" y1="${gy + 24}" x2="${fx}" y2="${gy + 24}" stroke="#9a9890" stroke-width="2"/><line x1="${px}" y1="${gy + 14}" x2="${px}" y2="${gy + 34}" stroke="#9a9890" stroke-width="2"/><line x1="${fx}" y1="${gy + 14}" x2="${fx}" y2="${gy + 34}" stroke="#9a9890" stroke-width="2"/><text x="${(px + fx) / 2}" y="${gy + 56}" text-anchor="middle" class="lab">${String(s.dist).replace('.', ',')} m</text>`;
-  o += `<text x="784" y="36" text-anchor="end" class="lab cam">Linse ${esc(s.lens)}</text>`;
   return o;
 }
 function paint3d() {
