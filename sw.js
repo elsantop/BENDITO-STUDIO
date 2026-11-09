@@ -1,7 +1,7 @@
 // Offline-Cache. Bei Änderungen an den Dateien die Versionsnummer erhöhen.
-const CACHE = 'studio-v4';
+const CACHE = 'studio-v5';
 const FILES = [
-  './', 'index.html', 'styles.css', 'data.js', 'app.js', 'camera.js', 'figure3d.js', 'three.min.js', 'three-addons.js', 'xbot.glb',
+  './', 'index.html', 'styles.css', 'data.js', 'app.js', 'camera.js', 'figure3d.js', 'three.min.js', 'three-addons.js', 'xbot.glb','ybot.fbx',
   'manifest.webmanifest', 'icon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png',
 ];
 

@@ -108,13 +108,14 @@ function personOld(pose,opts={}){
   return shade(g);
 }
 
-// ---- realistische Figur: rigged 3D-Körper (xbot.glb), Gelenke werden auf die Pose ausgerichtet
+// ---- realistische Figur: rigged 3D-Körper (Mixamo Y Bot, Fallback xbot.glb), Gelenke werden auf die Pose ausgerichtet
 let BASE=null;
 const BODY=new THREE.MeshPhysicalMaterial({color:0xe9e9ec,roughness:.32,metalness:0,clearcoat:.6,clearcoatRoughness:.25,skinning:true});
 const JOINTS=new THREE.MeshPhysicalMaterial({color:0xa9adb5,roughness:.4,metalness:.1,clearcoat:.4,skinning:true});
 const ready=new Promise(res=>{
-  if(!THREE.GLTFLoader){res(false);return}
-  new THREE.GLTFLoader().load('xbot.glb',g=>{BASE=g.scene;res(true)},null,()=>res(false));
+  const glb=()=>{if(!THREE.GLTFLoader){res(false);return}new THREE.GLTFLoader().load('xbot.glb',g=>{BASE=g.scene;res(true)},null,()=>res(false))};
+  if(!THREE.FBXLoader){glb();return}
+  new THREE.FBXLoader().load('ybot.fbx',o=>{o.scale.setScalar(.01);o.animations=[];BASE=o;res(true)},null,glb);
 });
 const _q=new THREE.Quaternion(),_q2=new THREE.Quaternion(),_a=new THREE.Vector3(),_b=new THREE.Vector3();
 function wp(o){return o.getWorldPosition(new THREE.Vector3())}
@@ -141,9 +142,9 @@ function person(pose,opts={}){
   const B=n=>root.getObjectByName('mixamorig'+n);
   root.traverse(o=>{if(o.isMesh){o.material=o.name.includes('Joints')?JOINTS:BODY;o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false}});
   // Athletischer: breitere Brust/Schultern, kräftigere Arme und Beine, schmalere Hüfte
-  const W={Hips:[.86,.94],Spine:[1.1,1.06],Spine1:[1.14,1.08],Spine2:[1.2,1.12],Neck:[1,1],LeftShoulder:[1,1],RightShoulder:[1,1],
-    LeftArm:[1.22,1.22],RightArm:[1.22,1.22],LeftForeArm:[1.12,1.12],RightForeArm:[1.12,1.12],LeftHand:[1,1],RightHand:[1,1],
-    LeftUpLeg:[.98,1],RightUpLeg:[.98,1],LeftLeg:[1.08,1.08],RightLeg:[1.08,1.08],LeftFoot:[1,1],RightFoot:[1,1]};
+  const W={Hips:[.92,.92],Spine:[1.06,1.02],Spine1:[1.2,1.12],Spine2:[1.34,1.2],Neck:[1.3,1.3],Head:[1,1],LeftShoulder:[1.2,1.2],RightShoulder:[1.2,1.2],
+    LeftArm:[1.42,1.42],RightArm:[1.42,1.42],LeftForeArm:[1.28,1.28],RightForeArm:[1.28,1.28],LeftHand:[1.08,1.08],RightHand:[1.08,1.08],
+    LeftUpLeg:[1.08,1.1],RightUpLeg:[1.08,1.1],LeftLeg:[1.2,1.2],RightLeg:[1.2,1.2],LeftFoot:[1,1],RightFoot:[1,1]};
   for(const n in W){const b=B(n),pw=W[b.parent.name.replace('mixamorig','')]||[1,1];b.scale.set(W[n][0]/pw[0],1,W[n][1]/pw[1])}
   g.updateMatrixWorld(true);
   // Becken: ganze Ausrichtung (seitlich + oben). Figur schaut nach +X, ihr links = -Z, darum L(+z) -> Right
@@ -287,6 +288,6 @@ function build(def){
   if(def.person){const q=def.person;const p=person(POSES[q.pose],q.bag?{bag:true}:{});p.rotation.y=(q.rot||0)*Math.PI/180;p.position.set(q.x||0,0,q.z||0);s.add(p)}
   const c=def.cam;return{scene:s,cam:{pos:V(...c.pos),look:V(...c.look),fov:c.fov||62}};
 }
-window.Figure3D={THREE_OK:true,ready,SC,build,sideScene,V,POSES};
+window.Figure3D={THREE_OK:true,ready,person,SC,build,sideScene,V,POSES};
 
 })();
