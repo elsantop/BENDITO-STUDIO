@@ -177,3 +177,76 @@ figcaption { font-size: 12px; color: var(--plat-dim); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 @media (min-width: 640px) { .views { grid-template-columns: 1fr 1fr; } }
 .ph { border: 0; box-shadow: 0 0 0 1px rgba(229, 228, 226, .14), 0 0 0 4px #1a1c21, 0 18px 40px -18px rgba(0, 0, 0, .8); }
+
+/* Kamera-Knopf im Clip */
+.camgo { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; margin-top: 14px; padding: 0 18px; border-radius: 16px; background: linear-gradient(180deg, #e2c696, #c9a56f); color: #17130c; font-size: 17px; font-weight: 600; box-shadow: 0 1px 0 rgba(255, 255, 255, .35) inset, 0 10px 24px -12px rgba(212, 180, 131, .6); }
+.camgo svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+.camgo span { flex: 1; text-align: left; }
+.camgo em { font-style: normal; font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: rgba(23, 19, 12, .12); font-variant-numeric: tabular-nums; }
+.camgo:active { transform: scale(.98); }
+
+/* Kamera-Ansicht */
+html.cam-open, html.cam-open body { overflow: hidden; }
+.camv { position: fixed; inset: 0; z-index: 100; background: #000; opacity: 0; transform: translateY(24px); transition: opacity .26s ease-out, transform .26s cubic-bezier(.2, .8, .2, 1); }
+.camv.in { opacity: 1; transform: none; }
+.camv video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cam-ui { position: absolute; background: rgba(0, 0, 0, .28); pointer-events: none; }
+.cam-ui.t { left: 0; right: 0; top: 0; height: 12%; }
+.cam-ui.b { left: 0; right: 0; bottom: 0; height: 25%; }
+.cam-ui.r { right: 0; top: 12%; bottom: 25%; width: 21.3%; }
+.cam-grid { position: absolute; inset: 0; pointer-events: none; background:
+  linear-gradient(90deg, transparent calc(33.33% - .5px), rgba(255, 255, 255, .22) calc(33.33% - .5px), rgba(255, 255, 255, .22) calc(33.33% + .5px), transparent calc(33.33% + .5px), transparent calc(66.66% - .5px), rgba(255, 255, 255, .22) calc(66.66% - .5px), rgba(255, 255, 255, .22) calc(66.66% + .5px), transparent calc(66.66% + .5px)),
+  linear-gradient(180deg, transparent calc(33.33% - .5px), rgba(255, 255, 255, .22) calc(33.33% - .5px), rgba(255, 255, 255, .22) calc(33.33% + .5px), transparent calc(33.33% + .5px), transparent calc(66.66% - .5px), rgba(255, 255, 255, .22) calc(66.66% - .5px), rgba(255, 255, 255, .22) calc(66.66% + .5px), transparent calc(66.66% + .5px)); }
+.cam-sz { position: absolute; left: 2.8%; top: 13.6%; width: 73%; height: 59.8%; border: 1.5px dashed rgba(143, 184, 216, .8); border-radius: 6px; pointer-events: none; }
+.cam-ost { position: absolute; left: 2.8%; width: 73%; top: 17%; display: grid; justify-items: center; gap: .2em; font: 600 7vw/1.15 var(--serif); letter-spacing: .05em; color: #fff2dc; text-shadow: 0 0 10px rgba(242, 179, 90, .9); text-align: center; pointer-events: none; }
+.cam-top { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 12px; padding: calc(env(safe-area-inset-top) + 10px) 16px 10px; background: linear-gradient(rgba(0, 0, 0, .6), transparent); }
+.cam-title { flex: 1; text-align: center; color: #fff; }
+.cam-title b { display: block; font-size: 16px; font-weight: 600; }
+.cam-title span { font-size: 13px; color: rgba(255, 255, 255, .7); font-variant-numeric: tabular-nums; }
+.cam-x, .cam-txt { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: rgba(30, 30, 32, .6); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: #fff; }
+.cam-x svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.cam-txt { width: auto; padding: 0 14px; border-radius: 99px; font-size: 14px; font-weight: 600; }
+.cam-txt[aria-pressed="true"] { color: var(--gold); }
+.cam-bot { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 18px 20px calc(env(safe-area-inset-bottom) + 22px); background: linear-gradient(transparent, rgba(0, 0, 0, .7)); }
+.cam-lens { justify-self: start; display: flex; gap: 4px; padding: 4px; border-radius: 99px; background: rgba(30, 30, 32, .6); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.cam-lens button { min-width: 44px; height: 36px; padding: 0 8px; border-radius: 99px; color: #fff; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cam-lens button.sel { background: rgba(255, 255, 255, .16); color: var(--gold); }
+.cam-rec { width: 76px; height: 76px; border-radius: 50%; border: 4px solid #fff; display: grid; place-items: center; }
+.cam-rec i { width: 60px; height: 60px; border-radius: 50%; background: #ff3b30; transition: all .2s ease-out; }
+.cam-rec.on i { width: 28px; height: 28px; border-radius: 7px; }
+.cam-tilt { justify-self: end; height: 44px; padding: 0 16px; border-radius: 99px; background: rgba(30, 30, 32, .6); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: #fff; font-size: 14px; font-weight: 600; }
+.cam-tilt.sel { color: var(--gold); }
+.cam-time { position: absolute; left: 50%; top: calc(env(safe-area-inset-top) + 74px); transform: translateX(-50%); margin: 0; padding: 4px 10px; border-radius: 6px; background: #ff3b30; color: #fff; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cam-msg { position: absolute; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 130px); margin: 0; padding: 12px 14px; border-radius: 14px; background: rgba(30, 30, 32, .82); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: #fff; font-size: 14px; text-align: center; }
+.cam-level { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 6px; pointer-events: none; color: #fff; }
+.cam-arc { width: 140px; height: 2px; background: rgba(255, 255, 255, .35); position: relative; }
+.cam-arc i { position: absolute; left: 0; right: 0; top: -1px; height: 4px; border-radius: 2px; background: #fff; transition: transform .1s linear; }
+.cam-level p { margin: 0; text-align: center; text-shadow: 0 1px 6px rgba(0, 0, 0, .8); }
+.cam-level b { display: block; font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cam-level span { font-size: 14px; }
+.cam-level.ok .cam-arc i, .cam-level.ok .cam-arc { background: var(--gold); }
+.cam-level.ok b { color: var(--gold); }
+
+/* Ideen */
+.ideas-h { margin: 6px 4px 12px; }
+.ideas-h h2 { margin: 0; font: 500 30px/1.1 var(--serif); }
+.ideas-h p { margin: 4px 0 0; font-size: 14px; color: var(--plat-dim); }
+.chips { display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px 14px; padding: 0 16px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chips button { flex: none; height: 36px; padding: 0 16px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); color: var(--plat-dim); font-size: 14px; font-weight: 500; }
+.chips button.sel { background: rgba(212, 180, 131, .14); border-color: var(--gold-dim); color: var(--gold); }
+.idea { padding: 16px 16px 14px; }
+.idea-top { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--plat-faint); }
+.idea-top > span:first-child { flex: 1; }
+.score { min-width: 30px; height: 24px; padding: 0 7px; display: inline-grid; place-items: center; border-radius: 8px; background: var(--surface-2); color: var(--gold); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.idea-hook { margin: 8px 0 0; font: italic 500 23px/1.22 var(--serif); color: var(--plat); text-wrap: balance; }
+.idea-verse { margin: 6px 0 0; font-size: 14px; color: var(--gold-dim); }
+.idea .note { margin-top: 8px; line-height: 1.5; }
+.idea.ready-i { border-color: var(--gold-dim); }
+.idea.parked { opacity: .62; }
+
+/* Fliessende Wechsel */
+@media (prefers-reduced-motion: no-preference) {
+  #app.swap { animation: swap .22s cubic-bezier(.2, .8, .2, 1); }
+  @keyframes swap { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}

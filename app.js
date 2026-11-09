@@ -157,6 +157,7 @@ function clipCard(c) {
       <figure>${topView(c.top)}<figcaption>Von oben</figcaption></figure></div>
     <dl class="steps"><div><dt>Handy</dt><dd>${esc(c.handy)}</dd></div><div><dt>Du</dt><dd>${esc(c.du)}</dd></div><div><dt>Takes</dt><dd>${esc(c.takes)}</dd></div></dl>
     <p class="planb"><b>Falls es nicht geht</b>${esc(c.b)}</p>
+    <button class="camgo" data-action="camera" data-id="${esc(c.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg><span>Kamera öffnen</span><em>${esc(s.lens)} · ${s.tilt}°</em></button>
     <div class="shot-done">${taskRow({ id: c.id, t: on ? 'Gedreht' : 'Als gedreht abhaken' })}</div></section>`;
 }
 
@@ -255,13 +256,16 @@ function renderCaptions() {
 
 // ---------- Tab Ideen
 function renderIdeas() {
-  const kinds = ['Alle', 'Idee', 'Bereit', 'Geparkt'];
-  const list = IDEAS.filter((i) => ideaFilter === 'Alle' || i.status === ideaFilter);
-  return `<div class="seg">${kinds.map((k) => `<button class="${k === ideaFilter ? 'sel' : ''}" data-action="idea-filter" data-k="${k}">${k}</button>`).join('')}</div>
-    ${list.map((i) => `<section class="card"><div class="kind">${esc(i.kind)}</div><h2>${esc(i.title)}</h2>
-      <div class="meta">${i.verse ? `<span>${esc(i.verse)}</span>` : ''}<span class="pill${i.status === 'Bereit' ? ' gold' : ''}">${esc(i.status)}</span></div>
-      ${i.note ? `<p class="note">${esc(i.note)}</p>` : ''}</section>`).join('') || '<p class="note">Keine Ideen in dieser Liste.</p>'}
-    <p class="note">Neue Idee? In data.js unter IDEAS eine Zeile ergänzen oder Claude schreiben.</p>`;
+  const kinds = ['Alle', 'Gym', 'Werkstatt', 'Zuhause', 'Draussen', 'Geparkt'];
+  const list = IDEAS.filter((i) => ideaFilter === 'Alle' || (ideaFilter === 'Geparkt' ? i.status === 'Geparkt' : i.where === ideaFilter && i.status !== 'Geparkt'));
+  const ready = IDEAS.filter((i) => i.status === 'Bereit').length;
+  return `<header class="ideas-h"><h2>${IDEAS.length} Ideen</h2><p>${ready} bereit zum Posten. Sortiert nach Hook-Stärke.</p></header>
+    <div class="chips" role="group" aria-label="Filter">${kinds.map((k) => `<button class="${k === ideaFilter ? 'sel' : ''}" data-action="idea-filter" data-k="${k}">${k}</button>`).join('')}</div>
+    ${list.map((i) => `<article class="card idea${i.status === 'Bereit' ? ' ready-i' : ''}${i.status === 'Geparkt' ? ' parked' : ''}">
+      <div class="idea-top"><span>${esc(i.kind)} · ${esc(i.where || '')}</span>${i.status !== 'Idee' ? `<span class="pill${i.status === 'Bereit' ? ' gold' : ''}">${esc(i.status)}</span>` : ''}${i.score ? `<span class="score" title="Hook-Score">${i.score}</span>` : ''}</div>
+      <h3 class="idea-hook">${esc(i.hook || i.title)}</h3>
+      ${i.verse ? `<p class="idea-verse">${esc(i.verse)}</p>` : ''}
+      ${i.note ? `<p class="note">${esc(i.note)}</p>` : ''}</article>`).join('') || '<p class="note">Hier ist noch nichts. Schreib Claude, was du drehen willst.</p>'}`;
 }
 
 // ---------- Darstellen
@@ -270,6 +274,7 @@ function render() {
   const app = document.getElementById('app');
   const html = { week: renderWeek, shoot: renderShoot, captions: renderCaptions, ideas: renderIdeas }[tab]();
   app.innerHTML = html + '<p class="verse">Pressure makes us. Hope keeps us. · Römer 8:18</p>';
+  if (render.last !== tab) { app.classList.remove('swap'); void app.offsetWidth; app.classList.add('swap'); render.last = tab; }
   document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('sel', b.dataset.tab === tab));
   if (tab === 'shoot') paint3d();
 }
@@ -305,6 +310,7 @@ document.addEventListener('click', (e) => {
   if (a === 'open-caption') goto('captions', 'cap-' + b.dataset.id);
   if (a === 'shoot') { shootId = b.dataset.id; render(); }
   if (a === 'idea-filter') { ideaFilter = b.dataset.k; render(); }
+  if (a === 'camera') { const c = SHOOTS[shootId].clips.find((x) => x.id === b.dataset.id); if (c && window.StudioCam) StudioCam.open(c); }
   if (a === 'copy') {
     const text = POSTS[b.dataset.id]?.caption || '';
     const done = () => toast('Caption kopiert');

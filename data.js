@@ -179,8 +179,21 @@ const SHOOTS = {
 // IDEEN: Sammlung für später. status: 'Idee' | 'Bereit' | 'Geparkt'
 // ---------------------------------------------------------------------------
 const IDEAS = [
-  { id: 'i-rom811', kind: 'Reel', title: 'Römer 8:11', verse: 'Römer 8:11', status: 'Idee', note: 'Der Geist, der Jesus auferweckt hat, lebt in dir. Passt zu einem frühen Gym-Morgen im Dunkeln.' },
-  { id: 'i-neh', kind: 'Reel', title: 'One hand', verse: 'Nehemia 4:17', status: 'Idee', note: 'Mit einer Hand gebaut, in der anderen die Waffe. Werkstatt: eine Hand am Schlagschrauber.' },
-  { id: 'i-workday', kind: 'Karussell', title: 'Workday', status: 'Idee', note: 'Ein Arbeitstag vom Wecker bis zum Gym, Slide für Slide.' },
-  { id: 'i-heaviest', kind: 'Karussell', title: 'The Heaviest Weight', verse: '1. Mose 45:4 · 50:20', status: 'Geparkt', note: 'Face Reveal. Schliesst die Josef-Geschichte von «No Face. Yet.» ab. Erst nach der Transformation.' },
+  // hook = On-Screen-Satz (Englisch), score = Hook-Score aus /ig-reel, where = Drehort
+  { id: 'i-hr3', kind: 'Reel', where: 'Gym', hook: 'Under pressure.', title: 'Hidden Reps #3', verse: '1. Korinther 10:13', status: 'Bereit', note: 'Schnittplan ist fertig (Projektdateien). Nur noch posten, wenn eine Woche ohne neuen Dreh ist.' },
+  { id: 'i-6am', kind: 'Reel', where: 'Werkstatt', hook: 'Nobody claps for you at 6 am.', score: 81, verse: 'Kolosser 3:23', status: 'Idee', note: 'Werkstatt vor Arbeitsbeginn: Licht an, Rolltor, erster Schlagschrauber. Eine Zeile pro Clip, Vers als Schluss.' },
+  { id: 'i-rep8', kind: 'Reel', where: 'Gym', hook: 'Rep 8 is where I used to quit.', score: 78, verse: 'Psalm 18:32', status: 'Idee', note: 'Ein Satz, gezählt von Rep 1 bis 10. Bei Rep 8 Speed-Ramp auf langsam, dann zwei Reps mehr als früher.' },
+  { id: 'i-7things', kind: 'Karussell', where: 'Zuhause', hook: '7 things I quit for this.', score: 78, verse: 'Hebräer 12:1', status: 'Idee', note: 'Pro Slide ein Ding, das du losgelassen hast (z. B. Energy Drinks, Snooze, Nachtessen um 23 Uhr). Letzte Slide: was du dafür bekommen hast.' },
+  { id: 'i-steps', kind: 'Reel', where: 'Draussen', hook: '10,000 steps instead of quitting.', score: 63, verse: 'Jesaja 40:31', status: 'Idee', note: 'Abendspaziergang, Schuhe POV, Strassenlampen. Für die Tage ohne Gym.' },
+  { id: 'i-w15', kind: 'Karussell', where: 'Zuhause', hook: 'Week 1 vs. week 15.', score: 63, verse: 'Klagelieder 3:22–23', status: 'Idee', note: 'Nur wenn du die Zahlen zeigen willst. Ohne Gesicht: gleiche Ecke, gleicher Hoodie, gleiches Licht.' },
+  { id: 'i-512', kind: 'Reel', where: 'Gym', hook: "5:12 am. Nobody's watching you.", score: 58, verse: 'Matthäus 6:6', status: 'Idee', note: 'Uhr auf dem Handy, leere Halle, Licht geht an. Passt in die Hidden-Reps-Reihe.' },
+  { id: 'i-cars', kind: 'Reel', where: 'Werkstatt', hook: 'I fixed 9 cars today. Then me.', score: 55, verse: '2. Korinther 5:17', status: 'Idee', note: 'Zahl an den echten Tag anpassen. Werkstatt-Feierabend schneidet direkt auf das Gym.' },
+  { id: 'i-60kg', kind: 'Reel', where: 'Gym', hook: 'Same 60 kg bar. Different me.', score: 55, verse: '2. Korinther 12:9', status: 'Idee', note: 'Gleiche Übung, gleiche Kamera wie in Woche 1. Gewicht an deine echte Zahl anpassen.' },
+  { id: 'i-phone', kind: 'Reel', where: 'Zuhause', hook: "No phone until I've prayed.", score: 52, verse: 'Psalm 5:3', status: 'Idee', note: 'Wecker, Handy umgedreht, offene Bibel im ersten Licht. Ruhig, kein Drop.' },
+  { id: 'i-torque', kind: 'Reel', where: 'Werkstatt', hook: '120 Nm. Every bolt. Every time.', score: 51, verse: 'Lukas 16:10', status: 'Idee', note: 'Drehmomentschlüssel klickt, Rad für Rad. Treu im Kleinen.' },
+  { id: 'i-prep', kind: 'Reel', where: 'Zuhause', hook: 'Meal prep at 9 pm. Again.', score: 51, verse: '1. Korinther 9:27', status: 'Idee', note: 'Boxen füllen, Licht von oben, Uhr im Bild.' },
+  { id: 'i-rom811', kind: 'Reel', where: 'Gym', hook: 'Römer 8:11', verse: 'Römer 8:11', status: 'Idee', note: 'Der Geist, der Jesus auferweckt hat, lebt in dir. Passt zu einem frühen Gym-Morgen im Dunkeln. Hook noch offen.' },
+  { id: 'i-neh', kind: 'Reel', where: 'Werkstatt', hook: 'One hand.', verse: 'Nehemia 4:17', status: 'Idee', note: 'Mit einer Hand gebaut, in der anderen die Waffe. Eine Hand am Schlagschrauber.' },
+  { id: 'i-workday', kind: 'Karussell', where: 'Werkstatt', hook: 'Workday.', status: 'Idee', note: 'Ein Arbeitstag vom Wecker bis zum Gym, Slide für Slide.' },
+  { id: 'i-heaviest', kind: 'Karussell', where: 'Zuhause', hook: 'The Heaviest Weight', verse: '1. Mose 45:4 · 50:20', status: 'Geparkt', note: 'Face Reveal. Schliesst die Josef-Geschichte von «No Face. Yet.» ab. Erst nach der Transformation.' },
 ];
