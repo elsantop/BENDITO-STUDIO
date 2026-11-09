@@ -86,7 +86,7 @@ function shoe(an,face){
   return g;
 }
 // pose: joints in metres, figure facing +X; mirror side: L = +z
-function person(pose,opts={}){
+function personOld(pose,opts={}){
   const j={};for(const k in pose)j[k]=pose[k].clone?pose[k].clone():pose[k];
   const g=new THREE.Group();
   const face=j.face||V(1,0,0);j.face=face;
@@ -105,6 +105,79 @@ function person(pose,opts={}){
   g.add(torso(j));g.add(hood(j));
   if(opts.bag){const b=new THREE.Mesh(new THREE.BoxGeometry(.32,.22,.18),M.bag);b.position.copy(j.pelvis).add(V(-.05,0,-.22));g.add(b);
     g.add(seg(b.position.clone().add(V(0,.1,0)),j.shL.clone().add(V(0,.02,-.04)),[[0,0],[.0001,.012],[1,.012],[1,0]],M.bag));}
+  return shade(g);
+}
+
+// ---- realistische Figur: rigged 3D-Körper (xbot.glb), Gelenke werden auf die Pose ausgerichtet
+let BASE=null;
+const BODY=new THREE.MeshPhysicalMaterial({color:0xe9e9ec,roughness:.32,metalness:0,clearcoat:.6,clearcoatRoughness:.25,skinning:true});
+const JOINTS=new THREE.MeshPhysicalMaterial({color:0xa9adb5,roughness:.4,metalness:.1,clearcoat:.4,skinning:true});
+const ready=new Promise(res=>{
+  if(!THREE.GLTFLoader){res(false);return}
+  new THREE.GLTFLoader().load('xbot.glb',g=>{BASE=g.scene;res(true)},null,()=>res(false));
+});
+const _q=new THREE.Quaternion(),_q2=new THREE.Quaternion(),_a=new THREE.Vector3(),_b=new THREE.Vector3();
+function wp(o){return o.getWorldPosition(new THREE.Vector3())}
+function setWorldQuat(bone,qw){
+  bone.parent.getWorldQuaternion(_q2);_q2.invert();
+  bone.quaternion.copy(_q2.multiply(qw));bone.updateMatrixWorld(true);
+}
+function aim(bone,child,dir){
+  bone.updateMatrixWorld(true);
+  const cur=wp(child).sub(wp(bone)).normalize();
+  const q=new THREE.Quaternion().setFromUnitVectors(cur,dir.clone().normalize());
+  setWorldQuat(bone,q.multiply(bone.getWorldQuaternion(new THREE.Quaternion())));
+}
+function basis(lat,up){
+  const y=up.clone().normalize();const x=lat.clone().sub(y.clone().multiplyScalar(lat.dot(y))).normalize();
+  const z=new THREE.Vector3().crossVectors(x,y);return new THREE.Matrix4().makeBasis(x,y,z);
+}
+function person(pose,opts={}){
+  if(!BASE)return personOld(pose,opts);
+  const j={};for(const k in pose)j[k]=pose[k].clone?pose[k].clone():pose[k];
+  const face=(j.face||V(1,0,0)).clone();face.y=0;face.normalize();
+  const root=THREE.SkeletonUtils.clone(BASE);
+  const g=new THREE.Group();g.add(root);g.updateMatrixWorld(true);
+  const B=n=>root.getObjectByName('mixamorig'+n);
+  root.traverse(o=>{if(o.isMesh){o.material=o.name.includes('Joints')?JOINTS:BODY;o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false}});
+  // Athletischer: breitere Brust/Schultern, kräftigere Arme und Beine, schmalere Hüfte
+  const W={Hips:[.86,.94],Spine:[1.1,1.06],Spine1:[1.14,1.08],Spine2:[1.2,1.12],Neck:[1,1],LeftShoulder:[1,1],RightShoulder:[1,1],
+    LeftArm:[1.22,1.22],RightArm:[1.22,1.22],LeftForeArm:[1.12,1.12],RightForeArm:[1.12,1.12],LeftHand:[1,1],RightHand:[1,1],
+    LeftUpLeg:[.98,1],RightUpLeg:[.98,1],LeftLeg:[1.08,1.08],RightLeg:[1.08,1.08],LeftFoot:[1,1],RightFoot:[1,1]};
+  for(const n in W){const b=B(n),pw=W[b.parent.name.replace('mixamorig','')]||[1,1];b.scale.set(W[n][0]/pw[0],1,W[n][1]/pw[1])}
+  g.updateMatrixWorld(true);
+  // Becken: ganze Ausrichtung (seitlich + oben). Figur schaut nach +X, ihr links = -Z, darum L(+z) -> Right
+  const hips=B('Hips');
+  const bLat=wp(B('LeftUpLeg')).sub(wp(B('RightUpLeg'))),bUp=wp(B('Spine2')).sub(wp(hips));
+  const tLat=j.hipR.clone().sub(j.hipL),tUp=j.neck.clone().sub(j.pelvis);
+  const rot=basis(tLat,tUp).multiply(basis(bLat,bUp).invert());
+  const qr=new THREE.Quaternion().setFromRotationMatrix(rot);
+  setWorldQuat(hips,qr.multiply(hips.getWorldQuaternion(new THREE.Quaternion())));
+  const up=tUp.clone();
+  aim(B('Spine'),B('Spine1'),up);aim(B('Spine1'),B('Spine2'),up);aim(B('Spine2'),B('Neck'),up);
+  const hd=j.head.clone().sub(j.neck);
+  aim(B('Neck'),B('Head'),hd);
+  const hdir=hd.clone().normalize();if(j.headDown){hdir.lerp(face.clone().add(V(0,-.6,0)),Math.min(j.headDown,1)*.5).normalize()}
+  aim(B('Head'),B('HeadTop_End'),hdir);
+  [['L','Right'],['R','Left']].forEach(([s,m])=>{
+    const fa=j['wr'+s].clone().sub(j['el'+s]);
+    aim(B(m+'Arm'),B(m+'ForeArm'),j['el'+s].clone().sub(j['sh'+s]));
+    aim(B(m+'ForeArm'),B(m+'Hand'),fa);
+    aim(B(m+'Hand'),B(m+'HandMiddle1'),fa);
+    aim(B(m+'UpLeg'),B(m+'Leg'),j['kn'+s].clone().sub(j['hip'+s]));
+    aim(B(m+'Leg'),B(m+'Foot'),j['an'+s].clone().sub(j['kn'+s]));
+    const ff=(j['foot'+s]||face).clone();ff.y=0;ff.normalize();
+    aim(B(m+'Foot'),B(m+'ToeBase'),ff.multiplyScalar(.1).add(V(0,-.075,0)));
+  });
+  // Position: Becken auf Pose, dann auf den Boden stellen
+  g.updateMatrixWorld(true);
+  const hp=wp(hips);root.position.x+=j.pelvis.x-hp.x;root.position.z+=j.pelvis.z-hp.z;root.position.y+=j.pelvis.y-hp.y;
+  g.updateMatrixWorld(true);
+  let minY=Infinity;['LeftFoot','RightFoot','LeftToe_End','RightToe_End','LeftToeBase','RightToeBase'].forEach(n=>{minY=Math.min(minY,wp(B(n)).y)});
+  root.position.y+=0.035-minY;
+  g.updateMatrixWorld(true);
+  if(opts.bag){const b=new THREE.Mesh(new THREE.BoxGeometry(.32,.22,.18),M.bag);b.position.copy(wp(hips)).add(V(-.2,.02,.14));g.add(b);
+    g.add(seg(b.position.clone().add(V(0,.1,0)),wp(B('RightShoulder')).add(V(0,.03,-.04)),[[0,0],[.0001,.012],[1,.012],[1,0]],M.bag));}
   return shade(g);
 }
 const POSES={
@@ -214,6 +287,6 @@ function build(def){
   if(def.person){const q=def.person;const p=person(POSES[q.pose],q.bag?{bag:true}:{});p.rotation.y=(q.rot||0)*Math.PI/180;p.position.set(q.x||0,0,q.z||0);s.add(p)}
   const c=def.cam;return{scene:s,cam:{pos:V(...c.pos),look:V(...c.look),fov:c.fov||62}};
 }
-window.Figure3D={THREE_OK:true,SC,build,sideScene,V,POSES};
+window.Figure3D={THREE_OK:true,ready,SC,build,sideScene,V,POSES};
 
 })();

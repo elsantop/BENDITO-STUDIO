@@ -201,7 +201,7 @@ function phoneShot(def) {
   return shotCache.get(k);
 }
 function sideGeom(s) {
-  const left = -0.6, right = Math.max(s.dist + 1.3, 2.4), bottom = -0.35, span = right - left, top = bottom + (span * 460) / 800;
+  const left = -0.6, bottom = -0.35, span = Math.max(s.dist + 1.9, (2.3 - bottom) * 800 / 460), right = left + span, top = bottom + (span * 460) / 800;
   return { left, right, bottom, top, span };
 }
 function sideShot(s) {
@@ -225,6 +225,7 @@ function sideLabels(s) {
 }
 function paint3d() {
   if (!renderer()) return;
+  if (Figure3D.ready && !paint3d.ok) { Figure3D.ready.then(() => { paint3d.ok = true; paint3d(); }); return; }
   // nacheinander, damit das Handy nicht hängt
   const jobs = [...document.querySelectorAll('img[data-scene]:not([src]), img[data-side]:not([src])')];
   const step = () => {
