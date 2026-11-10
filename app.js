@@ -140,8 +140,9 @@ function renderShoot() {
   h += `<section class="card"><div class="kind">Schnitt</div><ul class="plain">${s.edit.map((e) => `<li>${esc(e)}</li>`).join('')}</ul>${s.ready ? `<p class="ready">${esc(s.ready)}</p>` : ''}</section>`;
   return h;
 }
-function phone(def, ost, label) {
-  return `<figure><div class="ph"><img data-scene='${esc(JSON.stringify(def))}' alt="${esc(label)}"><div class="sz"></div><div class="ui t"></div><div class="ui b"></div><div class="ui r"></div>
+function phone(def, ost, label, pic) {
+  const im = pic ? `<img class="real" src="${esc(pic)}" alt="${esc(label)}" loading="lazy" decoding="async">` : `<img data-scene='${esc(JSON.stringify(def))}' alt="${esc(label)}">`;
+  return `<figure><div class="ph">${im}<div class="sz"></div><div class="ui t"></div><div class="ui b"></div><div class="ui r"></div>
     <div class="ost">${(ost || []).map((l) => `<span>${esc(l)}</span>`).join('')}</div></div><figcaption>${esc(label)}</figcaption></figure>`;
 }
 function clipCard(c) {
@@ -151,7 +152,7 @@ function clipCard(c) {
   const rig = [[s.h, 'cm', 'Höhe'], [s.tilt, '°', 'Winkel'], [dist, 'm', 'Abstand'], [lens, '×', 'Linse']];
   return `<section class="card clip${on ? ' complete' : ''}" id="${esc(c.id)}">
     <header class="clip-h"><span class="num">${c.n}</span><div class="grow"><p class="ctime">${esc(c.t)} · Setup ${esc(c.setup)}</p><h3 class="cline">${esc(c.ost.join(' ').toLowerCase().replace(/^./, (m) => m.toUpperCase()))}</h3></div></header>
-    <div class="shots${c.end ? '' : ' one'}">${phone(c.scene, c.ost, 'Handybild')}${c.end ? phone(c.end, [], c.endLabel || 'Ende') : ''}</div>
+    <div class="shots${c.end && !c.img ? '' : ' one'}">${phone(c.scene, c.ost, 'Handybild', c.img)}${c.end && !c.img ? phone(c.end, [], c.endLabel || 'Ende') : ''}</div>
     <div class="rig" role="list" aria-label="Handy-Einstellung">${rig.map(([v, u, l]) => `<div role="listitem"><b>${esc(v)}<small>${u}</small></b><span>${l}</span></div>`).join('')}</div>
     <div class="views"><figure><div class="sv"><img data-side='${esc(JSON.stringify(s))}' alt="Seitenansicht"><svg viewBox="0 0 800 460"></svg></div><figcaption>Von der Seite</figcaption></figure>
       <figure>${topView(c.top)}<figcaption>Von oben</figcaption></figure></div>
