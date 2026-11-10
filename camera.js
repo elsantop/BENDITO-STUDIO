@@ -38,7 +38,20 @@
       </div>
       <label class="cam-exp" hidden><span>Helligkeit</span><input type="range" data-cam-exp min="-2" max="2" step="0.1" value="0"></label>
     </div>
-    <input class="cam-file" type="file" accept="video/*" capture="environment" hidden>
+    <div class="cam-setup" hidden>
+      <h3>Echte Kamera-App mit einem Tipp</h3>
+      <p>Safari darf die Kamera-App nicht direkt öffnen. Ein Kurzbefehl darf es. Einmal einrichten, dauert 1 Minute:</p>
+      <ol>
+        <li>Öffne die App <b>Kurzbefehle</b> und tippe oben rechts auf <b>+</b>.</li>
+        <li>Suche die Aktion <b>App öffnen</b> und wähle <b>Kamera</b>.</li>
+        <li>Tippe oben auf den Namen und nenne ihn genau <b>Studio Kamera</b>. Fertig.</li>
+      </ol>
+      <div class="cam-setup-b">
+        <a class="cam-setup-go" href="shortcuts://create-shortcut">Kurzbefehle öffnen</a>
+        <button class="cam-setup-ok" data-cam="scok">Ist eingerichtet</button>
+      </div>
+      <button class="cam-setup-x" data-cam="scx">Später</button>
+    </div>
     <p class="cam-time" hidden>00:00</p>
     <p class="cam-msg" hidden></p>
   </div>`;
@@ -70,7 +83,7 @@
       const ultra = l === '0.5' && /ultra/i.test(track.label || '');
       if (l === '0.5' && !ultra) {
         if (cap.zoom && cap.zoom.min <= 0.5) { await track.applyConstraints({ advanced: [{ zoom: cap.zoom.min }] }); msg(''); }
-        else msg('0,5× lässt Safari hier nicht zu. Tipp auf «iPhone-Kamera», dort hast du 0,5× und Helligkeit.');
+        else msg('0,5× lässt Safari hier nicht zu. Tipp auf «iPhone-Kamera».');
       } else msg('');
       // Helligkeit, wo der Browser es erlaubt (Android/Chrome). Safari kann das nicht.
       const ex = $('.cam-exp');
@@ -110,6 +123,14 @@
     const r = { '720': 6e6, '1080': 12e6, '4k': 35e6 }[fmt.res] || 12e6;
     return Math.round(r * (fmt.fps >= 50 ? 1.6 : 1));
   }
+  // Öffnet über den Kurzbefehl «Studio Kamera» die echte Kamera-App (0,5×, 4K 60, Helligkeit).
+  function openNative() {
+    if (rec && rec.state === 'recording') rec.stop();
+    stop();
+    location.href = 'shortcuts://run-shortcut?name=' + encodeURIComponent('Studio Kamera');
+  }
+  // Zurück in der App: Kamera wieder starten
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && $('.camv') && !stream) start(lens); });
   function stop() { if (stream) stream.getTracks().forEach((t) => t.stop()); stream = null; }
 
   // Neigung: Hochformat, aufrecht = 0°, nach oben gekippt = positiv
@@ -178,19 +199,19 @@
     if (a === 'tilt') toggleTilt();
     if (a === 'fmt') { const p = $('.cam-fmt'), on = p.hidden; p.hidden = !on; b.setAttribute('aria-expanded', on); }
     if (a === 'res' || a === 'fps') setFmt(a, b.dataset.v);
-    if (a === 'native') { if (rec && rec.state === 'recording') rec.stop(); stop(); $('.cam-file').click(); }
+    if (a === 'native') {
+      let ready = false; try { ready = localStorage.getItem('studio.sc') === '1'; } catch { }
+      if (!ready) { $('.cam-setup').hidden = false; return; }
+      openNative();
+    }
+    if (a === 'scok') { try { localStorage.setItem('studio.sc', '1'); } catch { } $('.cam-setup').hidden = true; openNative(); }
+    if (a === 'scx') $('.cam-setup').hidden = true;
     if (a === 'text') { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); $('.cam-ost').hidden = !on; }
   });
   document.addEventListener('input', (e) => {
     if (!e.target.matches('[data-cam-exp]') || !stream) return;
     const t = stream.getVideoTracks()[0];
     t.applyConstraints({ advanced: [{ exposureCompensation: +e.target.value }] }).catch(() => { });
-  });
-  document.addEventListener('change', async (e) => {
-    if (!e.target.matches('.cam-file')) return;
-    const f = e.target.files && e.target.files[0]; e.target.value = '';
-    if (f) { const file = new File([f], `clip-${clip.n}-take.${(f.name.split('.').pop() || 'mov')}`, { type: f.type || 'video/quicktime' }); if (navigator.canShare?.({ files: [file] })) { try { await navigator.share({ files: [file] }); } catch { } } }
-    if ($('.camv')) start(lens);
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   window.StudioCam = { open, close };

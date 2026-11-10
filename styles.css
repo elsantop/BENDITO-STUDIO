@@ -266,3 +266,13 @@ html.cam-open, html.cam-open body { overflow: hidden; }
 .cam-seg button { min-width: 52px; height: 34px; padding: 0 10px; border-radius: 99px; color: #fff; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .cam-seg button.sel { background: rgba(255, 255, 255, .16); color: var(--gold); }
 .cam-real { font-size: 12px; color: rgba(255, 255, 255, .7); padding: 2px; font-variant-numeric: tabular-nums; }
+.cam-setup { position: absolute; left: 16px; right: 16px; top: 50%; transform: translateY(-50%); padding: 22px 20px 14px; border-radius: 22px; background: rgba(20, 20, 22, .94); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); color: #fff; box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8), inset 0 0 0 1px rgba(226, 197, 144, .18); }
+.cam-setup h3 { margin: 0 0 8px; font: 600 22px/1.15 var(--serif); color: #f3e3c4; }
+.cam-setup p { margin: 0 0 12px; font-size: 14px; line-height: 1.45; color: rgba(255, 255, 255, .72); }
+.cam-setup ol { margin: 0 0 16px; padding-left: 20px; display: grid; gap: 8px; font-size: 15px; line-height: 1.4; }
+.cam-setup ol b { color: var(--gold); font-weight: 600; }
+.cam-setup-b { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cam-setup-go, .cam-setup-ok { height: 46px; display: grid; place-items: center; border-radius: 14px; font-size: 15px; font-weight: 600; text-decoration: none; }
+.cam-setup-go { background: rgba(255, 255, 255, .1); color: #fff; }
+.cam-setup-ok { background: linear-gradient(180deg, #e2c590, #b8955a); color: #15120c; font-weight: 700; }
+.cam-setup-x { display: block; margin: 10px auto 0; height: 36px; padding: 0 12px; color: rgba(255, 255, 255, .55); font-size: 14px; }
