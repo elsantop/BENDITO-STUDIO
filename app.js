@@ -225,6 +225,12 @@ function sideLabels(s) {
   let o = `<line x1="${px}" y1="${gy}" x2="${px}" y2="${py + 14}" stroke="#d4b483" stroke-dasharray="3 4" stroke-width="2"/><text x="${px - 14}" y="${(gy + py) / 2 + 8}" text-anchor="end" class="lab warm">${s.h} cm</text>`;
   if (s.tilt) { const r = 70; o += `<line x1="${px}" y1="${py}" x2="${px + r + 30}" y2="${py}" stroke="#9a9890" stroke-dasharray="2 4"/><path d="M${px + r} ${py} A${r} ${r} 0 0 0 ${px + r * Math.cos(a)} ${py - r * Math.sin(a)}" fill="none" stroke="#d4b483" stroke-width="2.5"/><text x="${px + r + 12}" y="${py - r * Math.sin(a / 2) + 4}" class="lab warm">${s.tilt}°</text>`; }
   o += `<line x1="${px}" y1="${gy + 24}" x2="${fx}" y2="${gy + 24}" stroke="#9a9890" stroke-width="2"/><line x1="${px}" y1="${gy + 14}" x2="${px}" y2="${gy + 34}" stroke="#9a9890" stroke-width="2"/><line x1="${fx}" y1="${gy + 14}" x2="${fx}" y2="${gy + 34}" stroke="#9a9890" stroke-width="2"/><text x="${(px + fx) / 2}" y="${gy + 56}" text-anchor="middle" class="lab">${String(s.dist).replace('.', ',')} m</text>`;
+  if (s.real) {
+    // echte Figur: Füsse auf dem Boden bei «Abstand», Höhe in Metern
+    const H = ((s.realH || 2.1) / (g.top - g.bottom)) * 460, W = H * 9 / 16, cx = X(s.dist + (s.dx || 0));
+    const flip = s.flip ? ` transform="translate(${2 * cx} 0) scale(-1 1)"` : '';
+    o = `<image href="${esc(s.real)}" x="${cx - W / 2}" y="${gy - H * (s.realFoot || 0.915)}" width="${W}" height="${H}" preserveAspectRatio="xMidYMax meet"${flip}/>` + o;
+  }
   return o;
 }
 function paint3d() {

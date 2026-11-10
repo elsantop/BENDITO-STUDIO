@@ -258,10 +258,11 @@ function sideScene(h,tilt,dist,poseName,fig){
   const a=THREE.MathUtils.degToRad(tilt),sp=THREE.MathUtils.degToRad(fig.fovHalf||24),L=3.2;
   const sh=new THREE.Shape();sh.moveTo(0,0);sh.lineTo(L*Math.cos(a-sp),L*Math.sin(a-sp));sh.lineTo(L*Math.cos(a+sp),L*Math.sin(a+sp));sh.lineTo(0,0);
   const cone=new THREE.Mesh(new THREE.ShapeGeometry(sh),M.cone);cone.position.set(0,h,.2);s.add(cone);
-  const p=person(POSES[poseName],fig.bag?{bag:true}:{});
+  if(!fig.real){const p=person(POSES[poseName],fig.bag?{bag:true}:{});
   if(fig.flip)p.rotation.y=Math.PI;
   if(fig.rotY!==undefined)p.rotation.y=fig.rotY;
-  p.position.set(dist+(fig.dx||0),0,0);s.add(p);
+  p.position.set(dist+(fig.dx||0),0,0);s.add(p);}
+  if(fig.real&&fig.realProps===false)return s;
   if(fig.prop==='bench')s.add(bench(dist+.45,0));
   if(fig.prop==='benchUnder'){s.add(bench(dist-.3,0));const w=POSES[poseName];s.add(dumbbell(V(dist+.03,1.63,.25)))}
   if(fig.prop==='barbell')s.add(barbell(dist+.15,.66));

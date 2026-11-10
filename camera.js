@@ -23,6 +23,11 @@
       <button class="cam-rec" data-cam="rec" aria-label="Aufnahme starten"><i></i></button>
       <button class="cam-tilt" data-cam="tilt">Winkel</button>
     </footer>
+    <div class="cam-side">
+      <button class="cam-native" data-cam="native"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg><span>iPhone-Kamera</span></button>
+      <label class="cam-exp" hidden><span>Helligkeit</span><input type="range" data-cam-exp min="-2" max="2" step="0.1" value="0"></label>
+    </div>
+    <input class="cam-file" type="file" accept="video/*" capture="environment" hidden>
     <p class="cam-time" hidden>00:00</p>
     <p class="cam-msg" hidden></p>
   </div>`;
@@ -34,7 +39,7 @@
   }
   function pick(l) {
     const back = devices.filter((d) => !/front|vorder|facetime/i.test(d.label));
-    if (l === '0.5') return back.find((d) => /ultra/i.test(d.label));
+    if (l === '0.5') return back.find((d) => /ultra/i.test(d.label)) || back.find((d) => /dual.?wide|triple|dual-weitwinkel|dreifach/i.test(d.label));
     return back.find((d) => /^(back camera|rückkamera|rückseitige kamera)$/i.test(d.label.trim())) || back.find((d) => !/ultra|tele|dual|triple/i.test(d.label));
   }
   async function start(l) {
@@ -48,11 +53,18 @@
       if (!devices.some((d) => d.label)) { await listBack(); dev = pick(l); if (dev) { stream.getTracks().forEach((t) => t.stop()); stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { ...base, deviceId: { exact: dev.deviceId } } }); } }
       const track = stream.getVideoTracks()[0];
       // Falls es keine eigene Ultraweitwinkel-Kamera gibt: Zoom versuchen
-      if (l === '0.5' && !pick('0.5')) {
-        const cap = track.getCapabilities ? track.getCapabilities() : {};
-        if (cap.zoom && cap.zoom.min <= 0.5) await track.applyConstraints({ advanced: [{ zoom: 0.5 }] });
-        else msg('0,5× gibt es in der Web-App auf diesem Handy nicht. Es läuft 1×.');
+      const cap = track.getCapabilities ? track.getCapabilities() : {};
+      const ultra = l === '0.5' && /ultra/i.test(track.label || '');
+      if (l === '0.5' && !ultra) {
+        if (cap.zoom && cap.zoom.min <= 0.5) { await track.applyConstraints({ advanced: [{ zoom: cap.zoom.min }] }); msg(''); }
+        else msg('0,5× lässt Safari hier nicht zu. Tipp auf «iPhone-Kamera», dort hast du 0,5× und Helligkeit.');
       } else msg('');
+      // Helligkeit, wo der Browser es erlaubt (Android/Chrome). Safari kann das nicht.
+      const ex = $('.cam-exp');
+      if (cap.exposureCompensation) {
+        const r = ex.querySelector('input'); r.min = cap.exposureCompensation.min; r.max = cap.exposureCompensation.max; r.step = cap.exposureCompensation.step || 0.1; r.value = 0; ex.hidden = false;
+        try { await track.applyConstraints({ advanced: [{ exposureMode: 'continuous' }] }); } catch { }
+      } else ex.hidden = true;
       $('.camv video').srcObject = stream;
     } catch (e) {
       msg(e && e.name === 'NotAllowedError' ? 'Kamera ist blockiert. Erlaube sie in Einstellungen → Safari → Kamera.' : 'Kamera lässt sich nicht starten.');
@@ -124,7 +136,19 @@
     if (a === 'lens') start(b.dataset.l);
     if (a === 'rec') recToggle();
     if (a === 'tilt') toggleTilt();
+    if (a === 'native') { if (rec && rec.state === 'recording') rec.stop(); stop(); $('.cam-file').click(); }
     if (a === 'text') { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); $('.cam-ost').hidden = !on; }
+  });
+  document.addEventListener('input', (e) => {
+    if (!e.target.matches('[data-cam-exp]') || !stream) return;
+    const t = stream.getVideoTracks()[0];
+    t.applyConstraints({ advanced: [{ exposureCompensation: +e.target.value }] }).catch(() => { });
+  });
+  document.addEventListener('change', async (e) => {
+    if (!e.target.matches('.cam-file')) return;
+    const f = e.target.files && e.target.files[0]; e.target.value = '';
+    if (f) { const file = new File([f], `clip-${clip.n}-take.${(f.name.split('.').pop() || 'mov')}`, { type: f.type || 'video/quicktime' }); if (navigator.canShare?.({ files: [file] })) { try { await navigator.share({ files: [file] }); } catch { } } }
+    if ($('.camv')) start(lens);
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   window.StudioCam = { open, close };
