@@ -44,7 +44,7 @@
       <ol>
         <li>Öffne die App <b>Kurzbefehle</b> und tippe oben rechts auf <b>+</b>.</li>
         <li>Suche die Aktion <b>App öffnen</b> und wähle <b>Kamera</b>.</li>
-        <li>Tippe oben auf den Namen und nenne ihn genau <b>Studio Kamera</b>. Fertig.</li>
+        <li>Tippe oben auf den Namen und nenne ihn genau <b>BENDITO STUDIO</b>. Fertig.</li>
       </ol>
       <div class="cam-setup-b">
         <a class="cam-setup-go" href="shortcuts://create-shortcut">Kurzbefehle öffnen</a>
@@ -123,11 +123,11 @@
     const r = { '720': 6e6, '1080': 12e6, '4k': 35e6 }[fmt.res] || 12e6;
     return Math.round(r * (fmt.fps >= 50 ? 1.6 : 1));
   }
-  // Öffnet über den Kurzbefehl «Studio Kamera» die echte Kamera-App (0,5×, 4K 60, Helligkeit).
+  // Öffnet über den Kurzbefehl «BENDITO STUDIO» die echte Kamera-App (0,5×, 4K 60, Helligkeit).
   function openNative() {
     if (rec && rec.state === 'recording') rec.stop();
     stop();
-    location.href = 'shortcuts://run-shortcut?name=' + encodeURIComponent('Studio Kamera');
+    location.href = 'shortcuts://run-shortcut?name=' + encodeURIComponent('BENDITO STUDIO');
   }
   // Zurück in der App: Kamera wieder starten
   document.addEventListener('visibilitychange', () => { if (!document.hidden && $('.camv') && !stream) start(lens); });
