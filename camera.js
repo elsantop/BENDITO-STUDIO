@@ -4,6 +4,9 @@
 // Teilen-Menü in Fotos gesichert.
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
+  const RES = { '720': [1280, 720], '1080': [1920, 1080], '4k': [3840, 2160] };
+  let fmt = { res: '1080', fps: 60 };
+  try { Object.assign(fmt, JSON.parse(localStorage.getItem('studio.cam') || '{}')); } catch { }
   let stream = null, rec = null, chunks = [], devices = [], lens = '1', clip = null, tiltOn = false, recStart = 0, timer = null;
 
   const html = () => `
@@ -25,6 +28,14 @@
     </footer>
     <div class="cam-side">
       <button class="cam-native" data-cam="native"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg><span>iPhone-Kamera</span></button>
+      <button class="cam-fmtbtn" data-cam="fmt" aria-expanded="false"><b></b><span></span></button>
+      <div class="cam-fmt" hidden>
+        <p>Qualität</p>
+        <div class="cam-seg" role="group" aria-label="Qualität"><button data-cam="res" data-v="720">720p</button><button data-cam="res" data-v="1080">1080p</button><button data-cam="res" data-v="4k">4K</button></div>
+        <p>Bilder pro Sekunde</p>
+        <div class="cam-seg" role="group" aria-label="Bilder pro Sekunde"><button data-cam="fps" data-v="24">24</button><button data-cam="fps" data-v="30">30</button><button data-cam="fps" data-v="60">60</button></div>
+        <small class="cam-real">Läuft gerade mit –</small>
+      </div>
       <label class="cam-exp" hidden><span>Helligkeit</span><input type="range" data-cam-exp min="-2" max="2" step="0.1" value="0"></label>
     </div>
     <input class="cam-file" type="file" accept="video/*" capture="environment" hidden>
@@ -46,7 +57,9 @@
     stop();
     lens = l;
     document.querySelectorAll('.cam-lens button').forEach((b) => b.classList.toggle('sel', b.dataset.l === l));
-    const base = { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 60 } };
+    const [w, h] = RES[fmt.res] || RES['1080'];
+    const base = { width: { ideal: w }, height: { ideal: h }, frameRate: { ideal: fmt.fps, max: fmt.fps } };
+    showFmt();
     try {
       let dev = pick(l);
       stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: dev ? { ...base, deviceId: { exact: dev.deviceId } } : { ...base, facingMode: { ideal: 'environment' } } });
@@ -66,9 +79,36 @@
         try { await track.applyConstraints({ advanced: [{ exposureMode: 'continuous' }] }); } catch { }
       } else ex.hidden = true;
       $('.camv video').srcObject = stream;
+      // Was Safari wirklich liefert
+      const st = track.getSettings ? track.getSettings() : {};
+      const got = Math.round(st.frameRate || 0), short = Math.min(st.width || 0, st.height || 0);
+      const gotRes = short >= 2000 ? '4K' : short >= 1000 ? '1080p' : short ? short + 'p' : '?';
+      $('.cam-real').textContent = `Läuft gerade mit ${gotRes} · ${got || '?'} fps`;
+      $('.cam-fmtbtn span').textContent = got ? `${got} fps` : '';
+      const want = fmt.res === '4k' ? '4K' : fmt.res + 'p';
+      if ((got && got < fmt.fps - 1) || (short && gotRes !== want)) {
+        const m = $('.cam-msg'); const extra = `${want} · ${fmt.fps} fps schafft Safari mit dieser Linse nicht, jetzt ${gotRes} · ${got} fps. Volle Qualität: «iPhone-Kamera».`;
+        msg(m && !m.hidden && m.textContent ? m.textContent + ' ' + extra : extra);
+      }
     } catch (e) {
       msg(e && e.name === 'NotAllowedError' ? 'Kamera ist blockiert. Erlaube sie in Einstellungen → Safari → Kamera.' : 'Kamera lässt sich nicht starten.');
     }
+  }
+  function showFmt() {
+    const b = $('.cam-fmtbtn b'); if (!b) return;
+    b.textContent = fmt.res === '4k' ? '4K' : fmt.res + 'p';
+    document.querySelectorAll('[data-cam="res"]').forEach((x) => x.classList.toggle('sel', x.dataset.v === fmt.res));
+    document.querySelectorAll('[data-cam="fps"]').forEach((x) => x.classList.toggle('sel', +x.dataset.v === +fmt.fps));
+  }
+  function setFmt(k, v) {
+    fmt[k] = k === 'fps' ? +v : v;
+    try { localStorage.setItem('studio.cam', JSON.stringify(fmt)); } catch { }
+    if (rec && rec.state === 'recording') rec.stop();
+    start(lens);
+  }
+  function bitrate() {
+    const r = { '720': 6e6, '1080': 12e6, '4k': 35e6 }[fmt.res] || 12e6;
+    return Math.round(r * (fmt.fps >= 50 ? 1.6 : 1));
   }
   function stop() { if (stream) stream.getTracks().forEach((t) => t.stop()); stream = null; }
 
@@ -97,7 +137,7 @@
     if (rec && rec.state === 'recording') { rec.stop(); return; }
     if (!stream || !window.MediaRecorder) { msg('Aufnehmen geht hier nicht. Nutze die Kamera-App mit diesen Werten.'); return; }
     const type = ['video/mp4', 'video/webm;codecs=h264', 'video/webm'].find((t) => MediaRecorder.isTypeSupported?.(t)) || '';
-    chunks = []; rec = new MediaRecorder(stream, type ? { mimeType: type, videoBitsPerSecond: 12e6 } : undefined);
+    chunks = []; rec = new MediaRecorder(stream, type ? { mimeType: type, videoBitsPerSecond: bitrate() } : undefined);
     rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
     rec.onstop = () => { btn.classList.remove('on'); clearInterval(timer); $('.cam-time').hidden = true; saveClip(new Blob(chunks, { type: rec.mimeType || 'video/mp4' })); };
     rec.start(); btn.classList.add('on'); recStart = Date.now(); $('.cam-time').hidden = false;
@@ -136,6 +176,8 @@
     if (a === 'lens') start(b.dataset.l);
     if (a === 'rec') recToggle();
     if (a === 'tilt') toggleTilt();
+    if (a === 'fmt') { const p = $('.cam-fmt'), on = p.hidden; p.hidden = !on; b.setAttribute('aria-expanded', on); }
+    if (a === 'res' || a === 'fps') setFmt(a, b.dataset.v);
     if (a === 'native') { if (rec && rec.state === 'recording') rec.stop(); stop(); $('.cam-file').click(); }
     if (a === 'text') { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); $('.cam-ost').hidden = !on; }
   });
