@@ -276,3 +276,4 @@ html.cam-open, html.cam-open body { overflow: hidden; }
 .cam-setup-go { background: rgba(255, 255, 255, .1); color: #fff; }
 .cam-setup-ok { background: linear-gradient(180deg, #e2c590, #b8955a); color: #15120c; font-weight: 700; }
 .cam-setup-x { display: block; margin: 10px auto 0; height: 36px; padding: 0 12px; color: rgba(255, 255, 255, .55); font-size: 14px; }
+.cam-quick { height: 36px; padding: 0 14px; border-radius: 99px; background: rgba(30, 30, 32, .6); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: #fff; font-size: 13px; font-weight: 600; }

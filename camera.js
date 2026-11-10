@@ -28,6 +28,7 @@
     </footer>
     <div class="cam-side">
       <button class="cam-native" data-cam="native"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg><span>iPhone-Kamera</span></button>
+      <button class="cam-quick" data-cam="quick">Schnell-Kamera</button>
       <button class="cam-fmtbtn" data-cam="fmt" aria-expanded="false"><b></b><span></span></button>
       <div class="cam-fmt" hidden>
         <p>Qualität</p>
@@ -38,6 +39,7 @@
       </div>
       <label class="cam-exp" hidden><span>Helligkeit</span><input type="range" data-cam-exp min="-2" max="2" step="0.1" value="0"></label>
     </div>
+    <input class="cam-file" type="file" accept="video/*" capture="environment" hidden>
     <div class="cam-setup" hidden>
       <h3>Echte Kamera-App mit einem Tipp</h3>
       <p>Safari darf die Kamera-App nicht direkt öffnen. Ein Kurzbefehl darf es. Einmal einrichten, dauert 1 Minute:</p>
@@ -205,6 +207,7 @@
       openNative();
     }
     if (a === 'scok') { try { localStorage.setItem('studio.sc', '1'); } catch { } $('.cam-setup').hidden = true; openNative(); }
+    if (a === 'quick') { if (rec && rec.state === 'recording') rec.stop(); stop(); $('.cam-file').click(); }
     if (a === 'scx') $('.cam-setup').hidden = true;
     if (a === 'text') { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); $('.cam-ost').hidden = !on; }
   });
@@ -212,6 +215,12 @@
     if (!e.target.matches('[data-cam-exp]') || !stream) return;
     const t = stream.getVideoTracks()[0];
     t.applyConstraints({ advanced: [{ exposureCompensation: +e.target.value }] }).catch(() => { });
+  });
+  document.addEventListener('change', async (e) => {
+    if (!e.target.matches('.cam-file')) return;
+    const f = e.target.files && e.target.files[0]; e.target.value = '';
+    if (f) { const file = new File([f], `clip-${clip.n}-take.${(f.name.split('.').pop() || 'mov')}`, { type: f.type || 'video/quicktime' }); if (navigator.canShare?.({ files: [file] })) { try { await navigator.share({ files: [file] }); } catch { } } }
+    if ($('.camv') && !stream) start(lens);
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   window.StudioCam = { open, close };
