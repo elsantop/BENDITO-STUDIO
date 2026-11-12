@@ -40,7 +40,7 @@ const WEEK = {
     ],
     '2026-11-13': [
       { title: 'Urus-Reel schneiden', kind: 'Edits', note: 'Nur vorhandenes Material, kein Dreh (Rücken schonen). Alle Schritte stehen beim Beitrag.', tasks: [
-        { id: 'urus-s0', t: '8 Clips in Edits laden (IMG_4639 bis 4663)', n: 'Reihenfolge siehe Beitrag «Hidden Reps #5»' },
+        { id: 'urus-s0', t: '8 Clips in Edits laden (inkl. Wuchten + Raddeckel)', n: 'Reihenfolge siehe Beitrag «Hidden Reps #5»' },
       ] },
     ],
     '2026-11-14': [
@@ -61,23 +61,23 @@ const WEEK = {
 // ---------------------------------------------------------------------------
 const POSTS = {
   urus: {
-    type: 'Reel', title: 'Hidden Reps #5', hook: "Winter doesn't care it's a Lamborghini.",
+    type: 'Reel', title: 'Hidden Reps #5', hook: '650 horses. Still not ready for winter.',
     verse: 'Sprüche 21:31', date: '2026-11-14', time: '19:00',
-    cover: 'Fertig: Projektdateien adamantvs/urus-reel/Cover Hidden Reps 5 – Winter.jpg (Logo-Nabe IMG_4640, Glow-Satz, PROVERBS 21:31, Kreuz).',
-    note: 'Urus-Radwechsel auf Winter. 12 s, 8 Clips, eine Zeile pro Clip auf den Beat. Loop: «winter» am Ende = «Winter» im Hook.',
+    cover: 'Fertig: Projektdateien adamantvs/urus-reel/Cover Hidden Reps 5 – Winter.jpg (Logo-Nabe IMG_4640, Glow-Satz «650 HORSES. STILL NOT READY FOR WINTER.», PROVERBS 21:31, Kreuz).',
+    note: 'Urus-Radwechsel auf Winter. 12,5 s, 8 Clips, eine Zeile pro Clip auf den Beat. Loop: «Ready for winter» am Ende = Hook. Kein Drehmoment-Clip, darum kein «torque».',
     slides: [
-      '0,0–2,2 s · IMG_4639 POV zu den 3 Felgen laufen · WINTER DOESN\'T CARE IT\'S A LAMBORGHINI. (gross, oben, ab Bild 1)',
+      '0,0–2,2 s · IMG_4639 POV zu den 3 Felgen laufen · 650 HORSES. / STILL NOT READY FOR WINTER. (gross, oben, ab Bild 1)',
       '2,2–3,4 s · IMG_4647 Sommerreifen geht vom Felgenhorn, 150 % · PIRELLI SUMMERS OFF.',
       '3,4–4,6 s · IMG_4651 Winter 2 über die Felge heben · WINTER 2S ON.',
-      '4,6–5,8 s · IMG_4652 Montierkopf zieht den Reifen drauf · kein Text',
+      '4,6–5,8 s · Wuchten: Klebegewichte auf die Felge drücken · BALANCED.',
       '5,8–7,0 s · IMG_4657 Rad auf die Nabe setzen · BACK ON THE HUB.',
       '7,0–8,4 s · IMG_4662 Schlagschrauber, Schnitt auf den Schlag · BOLTED DOWN. (Drop, ohne Animation)',
-      '8,4–9,6 s · IMG_4655 Felge mit Lappen abwischen · kein Text',
-      '9,6–12,0 s · IMG_4640 Logo-Nabe dunkel, langsam ranzoomen · READY FOR WINTER. / THE REST IS GOD\'S. («GOD\'S» = Reveal)',
+      '8,4–10,0 s · Mittleren Raddeckel mit Lambo-Logo einklicken, Schnitt genau auf den Klick · READY FOR WINTER.',
+      '10,0–12,5 s · IMG_4640 Logo-Nabe dunkel, langsam ranzoomen · THE REST IS GOD\'S. (Reveal)',
     ],
     tasks: {
       Schneiden: [
-        { id: 'urus-s1', t: '8 Clips auf den Beat schneiden, total ca. 12 s', n: 'Clip 2 auf 150 %, Night Shift Grade' },
+        { id: 'urus-s1', t: '8 Clips auf den Beat schneiden, total ca. 12,5 s', n: 'Clip 2 auf 150 %, Night Shift Grade' },
         { id: 'urus-s2', t: 'Texte einsetzen', n: 'Hook ab 0 s oben gross, sonst 0,2 s nach Schnitt, Verblassen 0,4 s' },
         { id: 'urus-s3', t: 'Kennzeichen prüfen', n: 'In keinem Standbild lesbar, trotzdem jeden Clip kurz checken' },
         { id: 'urus-s4', t: 'Trend-Sound in Instagram wählen' },
@@ -98,7 +98,7 @@ Share this with someone heading into a hard season.
 New hidden rep every Tue & Sat.
 
 #hiddenreps #mechaniclife #christianmen #wintertires #proverbs2131`,
-    check: 'Hook 59.6 OK · Loop ok · caption.py READY · Human Score 74.2',
+    check: 'Hook 66.2 OK · Loop ok · caption.py READY · Human Score 74.2',
   },
   hr5: {
     type: 'Reel', title: 'Hidden Reps #6 (Gym, neu drehen)', hook: 'I used to quit on day 3.',
