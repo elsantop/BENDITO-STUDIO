@@ -255,7 +255,7 @@ function renderCaptions() {
   return posts.map(([id, p]) => `<section class="card" id="cap-${esc(id)}"><div class="kind">${esc(p.type)} · ${short(p.date)} ${esc(p.time)}</div><h2>${esc(p.title)}</h2>
     ${p.hook ? `<p class="hook">«${esc(p.hook)}»</p>` : ''}
     ${p.cover ? `<p class="note"><b>Cover:</b> ${esc(p.cover)}</p>` : ''}
-    ${p.slides ? `<div class="gh">Slides</div><ol class="slides">${p.slides.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>` : ''}
+    ${p.slides ? `<div class="gh">${p.type === 'Reel' ? 'Schnittliste' : 'Slides'}</div><ol class="slides">${p.slides.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>` : ''}
     <div class="gh">Caption</div><div class="cap">${esc(p.caption || 'Noch keine Caption.')}</div>
     ${p.check ? `<p class="capcheck">${esc(p.check)}</p>` : ''}
     ${p.caption ? `<div class="btns"><button class="btn fill" data-action="copy" data-id="${esc(id)}">${IC.copy}Caption kopieren</button></div>` : ''}</section>`).join('');

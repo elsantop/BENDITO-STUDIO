@@ -39,12 +39,13 @@ const WEEK = {
       ] },
     ],
     '2026-11-13': [
-      { title: 'Karussell bauen', kind: 'Canva', tasks: [
-        { id: 'nfy-g1', t: '9 Slides bauen, Preset Cold Steel', n: 'Text immer unteres Drittel, ab Slide 6 wärmer' },
+      { title: 'Urus-Reel schneiden', kind: 'Edits', note: 'Nur vorhandenes Material, kein Dreh (Rücken schonen). Alle Schritte stehen beim Beitrag.', tasks: [
+        { id: 'urus-s0', t: '8 Clips in Edits laden (IMG_4639 bis 4663)', n: 'Reihenfolge siehe Beitrag «Hidden Reps #5»' },
       ] },
     ],
     '2026-11-14': [
-      { post: 'nfy' },
+      { post: 'urus' },
+      { title: 'Karussell verschoben', kind: 'Info', note: '«No Face. Yet.» rückt auf Di 17.11. 19:00. Fotos und Slides in Ruhe fertig machen, wenn der Rücken wieder geht.', tasks: [] },
     ],
     '2026-11-15': [
       { title: 'Zahlen und neuer Plan', kind: 'Wochenabschluss', tasks: [
@@ -59,8 +60,48 @@ const WEEK = {
 // BEITRÄGE: Reels und Karussells mit Caption
 // ---------------------------------------------------------------------------
 const POSTS = {
+  urus: {
+    type: 'Reel', title: 'Hidden Reps #5', hook: "Winter doesn't care it's a Lamborghini.",
+    verse: 'Sprüche 21:31', date: '2026-11-14', time: '19:00',
+    cover: 'Fertig: Projektdateien adamantvs/urus-reel/Cover Hidden Reps 5 – Winter.jpg (Logo-Nabe IMG_4640, Glow-Satz, PROVERBS 21:31, Kreuz).',
+    note: 'Urus-Radwechsel auf Winter. 12 s, 8 Clips, eine Zeile pro Clip auf den Beat. Loop: «winter» am Ende = «Winter» im Hook.',
+    slides: [
+      '0,0–2,2 s · IMG_4639 POV zu den 3 Felgen laufen · WINTER DOESN\'T CARE IT\'S A LAMBORGHINI. (gross, oben, ab Bild 1)',
+      '2,2–3,4 s · IMG_4647 Sommerreifen geht vom Felgenhorn, 150 % · PIRELLI SUMMERS OFF.',
+      '3,4–4,6 s · IMG_4651 Winter 2 über die Felge heben · WINTER 2S ON.',
+      '4,6–5,8 s · IMG_4652 Montierkopf zieht den Reifen drauf · kein Text',
+      '5,8–7,0 s · IMG_4657 Rad auf die Nabe setzen · BACK ON THE HUB.',
+      '7,0–8,4 s · IMG_4662 Schlagschrauber, Schnitt auf den Schlag · BOLTED DOWN. (Drop, ohne Animation)',
+      '8,4–9,6 s · IMG_4655 Felge mit Lappen abwischen · kein Text',
+      '9,6–12,0 s · IMG_4640 Logo-Nabe dunkel, langsam ranzoomen · READY FOR WINTER. / THE REST IS GOD\'S. («GOD\'S» = Reveal)',
+    ],
+    tasks: {
+      Schneiden: [
+        { id: 'urus-s1', t: '8 Clips auf den Beat schneiden, total ca. 12 s', n: 'Clip 2 auf 150 %, Night Shift Grade' },
+        { id: 'urus-s2', t: 'Texte einsetzen', n: 'Hook ab 0 s oben gross, sonst 0,2 s nach Schnitt, Verblassen 0,4 s' },
+        { id: 'urus-s3', t: 'Kennzeichen prüfen', n: 'In keinem Standbild lesbar, trotzdem jeden Clip kurz checken' },
+        { id: 'urus-s4', t: 'Trend-Sound in Instagram wählen' },
+        { id: 'urus-s5', t: 'Cover hochladen', n: 'Datei aus den Projektdateien (urus-reel)' },
+      ],
+      Posten: [
+        { id: 'urus-p1', t: 'Caption einfügen (Tab Captions)' },
+        { id: 'urus-p2', t: 'Reel posten Sa 19:00' },
+        { id: 'urus-p3', t: 'Ersten Kommentar anpinnen' },
+      ],
+    },
+    caption: `Winter tires on a Lamborghini Urus. I can't control the snow. Only how ready I am.
+
+"The horse is made ready for the day of battle, but the victory belongs to the LORD."
+– Proverbs 21:31 (ESV)
+
+Share this with someone heading into a hard season.
+New hidden rep every Tue & Sat.
+
+#hiddenreps #mechaniclife #christianmen #wintertires #proverbs2131`,
+    check: 'Hook 59.6 OK · Loop ok · caption.py READY · Human Score 74.2',
+  },
   hr5: {
-    type: 'Reel', title: 'Hidden Reps #5', hook: 'I used to quit on day 3.',
+    type: 'Reel', title: 'Hidden Reps #6 (Gym, neu drehen)', hook: 'I used to quit on day 3.',
     verse: 'Galater 6:9', date: '2026-11-10', time: '19:00', shoot: 'hr5', cover: 'Glow-Satz aus dem Hook, darunter GALATIANS 6:9, darunter das Kreuz. Bild aus Clip 3.',
     tasks: {
       Schneiden: [
@@ -90,7 +131,7 @@ New hidden rep every Tue & Sat.
   },
   nfy: {
     type: 'Karussell', title: 'No Face. Yet.', hook: 'Nobody here has seen my face.',
-    verse: '1. Mose 39:21', date: '2026-11-14', time: '19:00',
+    verse: '1. Mose 39:21', date: '2026-11-17', time: '19:00',
     note: '9 Slides über Josef. Slide 1 und 7 sind fertig.',
     slides: [
       'NOBODY HERE HAS SEEN MY FACE. · That\'s on purpose.',
@@ -179,6 +220,7 @@ const SHOOTS = {
 // IDEEN: Sammlung für später. status: 'Idee' | 'Bereit' | 'Geparkt'
 // ---------------------------------------------------------------------------
 const IDEAS = [
+  { id: 'i-gle', kind: 'Reel', where: 'Werkstatt', hook: 'One frayed wire. Whole engine down.', verse: 'Psalm 51:10', status: 'Bereit', note: 'GLE 53 AMG Kabelbaum, Clips sind schon da (IMG_4664 bis 4671): neuer Kabelbaum am Boden, durchgescheuerter Stecker mit offenen Litzen, offener Motorraum, am Schluss der saubere AMG-Deckel. Vorher/Nachher. Kandidat für Sa 21.11.' },
   // hook = On-Screen-Satz (Englisch), score = Hook-Score aus /ig-reel, where = Drehort
   { id: 'i-hr3', kind: 'Reel', where: 'Gym', hook: 'Under pressure.', title: 'Hidden Reps #3', verse: '1. Korinther 10:13', status: 'Bereit', note: 'Schnittplan ist fertig (Projektdateien). Nur noch posten, wenn eine Woche ohne neuen Dreh ist.' },
   { id: 'i-6am', kind: 'Reel', where: 'Werkstatt', hook: 'Nobody claps for you at 6 am.', score: 81, verse: 'Kolosser 3:23', status: 'Idee', note: 'Werkstatt vor Arbeitsbeginn: Licht an, Rolltor, erster Schlagschrauber. Eine Zeile pro Clip, Vers als Schluss.' },
